@@ -1,29 +1,18 @@
-# Svelte for VS Code
+# NodeKit extension for Codium
 
-Provides syntax highlighting and rich intellisense for Svelte components in VS Code, using the [svelte language server](/packages/language-server).
+Provides syntax highlighting and rich intellisense for NodeKit in VS Code.
+
+Forked from the Svelte Language Tools project.
 
 ## Setup
 
-If you added `"files.associations": {"*.svelte": "html" }` to your VSCode settings, remove it.
-
-If you have previously installed the old "Svelte" extension by James Birtles, uninstall it:
-
--   Through the UI: You can find it when searching for `@installed` in the extensions window (searching `Svelte` won't work).
--   Command line: `code --uninstall-extension JamesBirtles.svelte-vscode`
-
-This extension comes bundled with a formatter for Svelte files. To let this extension format Svelte files, adjust your VS Code settings:
-
-```
-   "[svelte]": {
-     "editor.defaultFormatter": "svelte.svelte-vscode"
-   },
-```
+If you added `"files.associations": {"*.page": "svelte" }`-style rules to your Codium settings, remove them.
 
 The formatter is a [Prettier](https://prettier.io/) [plugin](https://prettier.io/docs/en/plugins.html), which means some formatting options of Prettier apply. There are also Svelte specific settings like the sort order of scripts, markup, styles. More info about them and how to configure it can be found [here](https://github.com/sveltejs/prettier-plugin-svelte).
 
 You need at least VSCode version `1.52.0`.
 
-Do you want to use TypeScript/SCSS/Less/..? [See the docs](/docs/README.md#language-specific-setup).
+There is no support for TypeScript/SCSS/Less/. If you want that, please use plain old Svelte/SvelteKit.
 
 More docs and troubleshooting: [See here](/docs/README.md).
 
