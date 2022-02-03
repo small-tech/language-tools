@@ -291,7 +291,7 @@ function addRenameFileListener(getLS) {
         }
 
         window.withProgress(
-            { location: ProgressLocation.Window, title: 'Updating Imports..' },
+            { location: ProgressLocation.Window, title: 'Updating Imports…' },
             async () => {
                 const editsForFileRename = await getLS().sendRequest(
                     '$/getEditsForFileRename',
@@ -349,7 +349,7 @@ function addCompilePreviewCommand(getLS, context) {
             const uri = editor.document.uri;
             const svelteUri = CompiledCodeContentProvider.toSvelteSchemeUri(uri);
             window.withProgress(
-                { location: ProgressLocation.Window, title: 'Compiling..' },
+                { location: ProgressLocation.Window, title: 'Compiling…' },
                 async () => {
                     return await window.showTextDocument(svelteUri, {
                         preview: true,
