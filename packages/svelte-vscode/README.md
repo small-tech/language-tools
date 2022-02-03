@@ -16,6 +16,18 @@ There is no support for TypeScript/SCSS/Less/. If you want that, please use plai
 
 More docs and troubleshooting: [See here](/docs/README.md).
 
+## Development
+
+[VSCode extensions cannot be ESM currently](https://github.com/microsoft/vscode/issues/130367) so there is, sadly, a build stage. Different to the Svelte Language Tools projects (which uses the TypeScript compiler), we use esbuild to build/convert the plugin to CJS and bundle it.
+
+Run:
+
+```shell
+npm run build
+```
+
+(This also rebuild the grammars.)
+
 ## Features
 
 -   Svelte
