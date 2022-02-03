@@ -5,8 +5,7 @@
     "main": "dist/src/extension.js",
     "scripts": {
         "build:grammar": "npx js-yaml syntaxes/svelte.tmLanguage.src.yaml > syntaxes/svelte.tmLanguage.json",
-        "build:ts": "tsc -p ./",
-        "build": "npm run build:ts && npm run build:grammar",
+        "build": "npm run build:grammar",
         "vscode:prepublish": "npm run build && npm prune --production",
         "watch": "npm run build:grammar && tsc -w -p ./",
         "test": "echo 'NOOP'"
