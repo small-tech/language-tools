@@ -9,9 +9,12 @@
 
 ### Removed
 
-  - TypeScript plugin.
-  - PUG support.
-  - PostCSS support.
+  - TypeScript
+  - PUG
+  - SCSS
+  - LESS
+  - Stylus
+  - PostCSS
 
 ## Pre-fork (Svelte Language Tools)
 
