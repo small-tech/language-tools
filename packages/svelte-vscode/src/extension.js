@@ -262,6 +262,7 @@ function addDidChangeTextDocumentListener(getLS) {
     // Therefore we need to set this up for TS/JS files manually.
     workspace.onDidChangeTextDocument((evt) => {
         if (evt.document.languageId === 'javascript') {
+            // TODO: Rename this to onDidChangeJsFile once the language server is refactored for NodeKit.
             getLS().sendNotification('$/onDidChangeTsOrJsFile', {
                 uri: evt.document.uri.toString(true),
                 changes: evt.contentChanges.map((c) => ({
