@@ -554,18 +554,12 @@
         ]
     },
     "devDependencies": {
-        "@tsconfig/node12": "^1.0.0",
-        "@types/lodash": "^4.14.116",
-        "@types/node": "^13.9.0",
-        "@types/vscode": "*",
         "esbuild": "^0.14.18",
-        "js-yaml": "^3.14.0",
-        "typescript": "*"
+        "js-yaml": "^3.14.0"
     },
     "dependencies": {
         "lodash": "^4.17.21",
         "svelte-language-server": "*",
-        "typescript-svelte-plugin": "*",
         "vscode-languageclient": "^7.0.0"
     }
 }
