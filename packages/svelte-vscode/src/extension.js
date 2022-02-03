@@ -88,23 +88,17 @@ export function activate(context) {
                 'prettier',
                 'emmet',
                 'javascript',
-                'typescript',
                 'css',
-                'less',
-                'scss'
             ],
-            fileEvents: workspace.createFileSystemWatcher('{**/*.js,**/*.ts}', false, false, false)
+            fileEvents: workspace.createFileSystemWatcher('{**/*.js}', false, false, false)
         },
         initializationOptions: {
             configuration: {
                 svelte: workspace.getConfiguration('svelte'),
                 prettier: workspace.getConfiguration('prettier'),
                 emmet: workspace.getConfiguration('emmet'),
-                typescript: workspace.getConfiguration('typescript'),
                 javascript: workspace.getConfiguration('javascript'),
                 css: workspace.getConfiguration('css'),
-                less: workspace.getConfiguration('less'),
-                scss: workspace.getConfiguration('scss')
             },
             dontFilterIncompleteCompletions: true, // VSCode filters client side and is smarter at it than us
             isTrusted: workspace.isTrusted
@@ -268,7 +262,7 @@ function addDidChangeTextDocumentListener(getLS) {
     // because the extension says it's only responsible for Svelte files.
     // Therefore we need to set this up for TS/JS files manually.
     workspace.onDidChangeTextDocument((evt) => {
-        if (evt.document.languageId === 'typescript' || evt.document.languageId === 'javascript') {
+        if (evt.document.languageId === 'javascript') {
             getLS().sendNotification('$/onDidChangeTsOrJsFile', {
                 uri: evt.document.uri.toString(true),
                 changes: evt.contentChanges.map((c) => ({
@@ -292,7 +286,7 @@ function addRenameFileListener(getLS) {
         // and not files. So in case the URI does not contain a '.', check for imports to update.
         if (
             lastPart.includes('.') &&
-            !['.ts', '.js', '.json', '.svelte'].some((ending) => lastPart.endsWith(ending))
+            !['.js', '.json', '.svelte'].some((ending) => lastPart.endsWith(ending))
         ) {
             return;
         }
