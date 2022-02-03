@@ -7,7 +7,7 @@
         "build:grammar": "npx js-yaml syntaxes/svelte.tmLanguage.src.yaml > syntaxes/svelte.tmLanguage.json",
         "build": "npm run build:grammar && npx esbuild src/extension.js --bundle --outfile=dist/extension.js --format=cjs --platform=node --external:vscode",
         "vscode:prepublish": "npm run build && npm prune --production",
-        "watch": "npm run build:grammar && tsc -w -p ./",
+        "watch": "npm run build:grammar && npx esbuild src/extension.js --bundle --outfile=dist/extension.js --format=cjs --platform=node --external:vscode --watch",
         "test": "echo 'NOOP'"
     },
     "repository": {
@@ -458,38 +458,6 @@
                 }
             },
             {
-                "scopeName": "svelte.pug",
-                "path": "./syntaxes/pug-svelte.json",
-                "injectTo": [
-                    "source.svelte"
-                ],
-                "embeddedLanguages": {
-                    "source.ts": "typescript",
-                    "text.pug": "jade"
-                }
-            },
-            {
-                "scopeName": "svelte.pug.tags",
-                "path": "./syntaxes/pug-svelte-tags.json",
-                "injectTo": [
-                    "source.svelte"
-                ],
-                "embeddedLanguages": {
-                    "source.ts": "typescript",
-                    "text.pug": "jade"
-                }
-            },
-            {
-                "scopeName": "svelte.pug.dotblock",
-                "path": "./syntaxes/pug-svelte-dotblock.json",
-                "injectTo": [
-                    "source.svelte"
-                ],
-                "embeddedLanguages": {
-                    "source.ts": "typescript"
-                }
-            },
-            {
                 "scopeName": "markdown.svelte.codeblock",
                 "path": "./syntaxes/markdown-svelte.json",
                 "injectTo": [
@@ -498,13 +466,6 @@
                 "embeddedLanguages": {
                     "meta.embedded.block.svelte": "svelte"
                 }
-            },
-            {
-                "scopeName": "source.css.postcss",
-                "path": "./syntaxes/postcss.json",
-                "injectTo": [
-                    "source.svelte"
-                ]
             }
         ],
         "commands": [
