@@ -128,7 +128,6 @@ export function activate(context) {
         const parts = doc.uri.toString(true).split(/\/|\\/);
         if (
             [
-                /^tsconfig\.json$/,
                 /^jsconfig\.json$/,
                 /^svelte\.config\.(js|cjs|mjs)$/,
                 // https://prettier.io/docs/en/configuration.html
