@@ -6,16 +6,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { window, workspace, Disposable, TextDocument, Position, SnippetString } from 'vscode';
+import { window, workspace, Disposable, Position, SnippetString } from 'vscode';
 
-import { TextDocumentContentChangeEvent } from 'vscode-languageserver-protocol';
-
-export function activateTagClosing(
-    tagProvider: (document: TextDocument, position: Position) => Thenable<string>,
-    supportedLanguages: { [id: string]: boolean },
-    configName: string
-): Disposable {
-    const disposables: Disposable[] = [];
+export function activateTagClosing(tagProvider, supportedLanguages, configName) {
+    const disposables = [];
     workspace.onDidChangeTextDocument(
         (event) => onDidChangeTextDocument(event.document, event.contentChanges),
         null,
@@ -26,7 +20,7 @@ export function activateTagClosing(
     updateEnabledState();
     window.onDidChangeActiveTextEditor(updateEnabledState, null, disposables);
 
-    let timeout: NodeJS.Timer | undefined = void 0;
+    let timeout = void 0;
 
     function updateEnabledState() {
         isEnabled = false;
@@ -38,16 +32,13 @@ export function activateTagClosing(
         if (!supportedLanguages[document.languageId]) {
             return;
         }
-        if (!workspace.getConfiguration(void 0, document.uri).get<boolean>(configName)) {
+        if (!workspace.getConfiguration(void 0, document.uri).get(configName)) {
             return;
         }
         isEnabled = true;
     }
 
-    function onDidChangeTextDocument(
-        document: TextDocument,
-        changes: readonly TextDocumentContentChangeEvent[]
-    ) {
+    function onDidChangeTextDocument(document, changes) {
         if (!isEnabled) {
             return;
         }

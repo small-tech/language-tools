@@ -1,26 +1,10 @@
-import { LanguageClient } from 'vscode-languageclient/node';
-import {
-    Uri,
-    TextDocumentContentProvider,
-    EventEmitter,
-    workspace,
-    window,
-    Disposable
-} from 'vscode';
+import { Uri, EventEmitter, workspace, window } from 'vscode';
 import { atob, btoa } from './utils';
 import { debounce } from 'lodash';
 
-type CompiledCodeResp = {
-    js: { code: string; map: any };
-    css: { code: string; map: any };
-};
-
 const SVELTE_URI_SCHEME = 'svelte-compiled';
 
-function toSvelteSchemeUri<B extends boolean = false>(
-    srcUri: string | Uri,
-    asString?: B
-): B extends true ? string : Uri {
+function toSvelteSchemeUri(srcUri, asString) {
     srcUri = typeof srcUri == 'string' ? Uri.parse(srcUri) : srcUri;
     const src = btoa(srcUri.toString());
     const destUri = srcUri.with({
@@ -28,33 +12,31 @@ function toSvelteSchemeUri<B extends boolean = false>(
         fragment: src,
         path: srcUri.path + '.js'
     });
-    return (asString ? destUri.toString() : destUri) as any;
+    return asString ? destUri.toString() : destUri;
 }
 
-function fromSvelteSchemeUri<B extends boolean = false>(
-    destUri: string | Uri,
-    asString?: B
-): B extends true ? string : Uri {
+function fromSvelteSchemeUri(destUri, asString) {
     destUri = typeof destUri == 'string' ? Uri.parse(destUri) : destUri;
     const src = atob(destUri.fragment);
-    return (asString ? src : Uri.parse(src)) as any;
+    return asString ? src : Uri.parse(src);
 }
 
-export default class CompiledCodeContentProvider implements TextDocumentContentProvider {
+export default class CompiledCodeContentProvider {
     static scheme = SVELTE_URI_SCHEME;
     static toSvelteSchemeUri = toSvelteSchemeUri;
     static fromSvelteSchemeUri = fromSvelteSchemeUri;
 
-    private disposed = false;
-    private didChangeEmitter = new EventEmitter<Uri>();
-    private subscriptions: Disposable[] = [];
-    private watchedSourceUri = new Set<string>();
+    disposed = false;
+    didChangeEmitter = new EventEmitter();
+    subscriptions = [];
+    watchedSourceUri = new Set();
 
     get onDidChange() {
         return this.didChangeEmitter.event;
     }
 
-    constructor(private getLanguageClient: () => LanguageClient) {
+    constructor(getLanguageClient) {
+        this.getLanguageClient = getLanguageClient;
         this.subscriptions.push(
             workspace.onDidChangeTextDocument(
                 debounce(async (changeEvent) => {
@@ -80,14 +62,11 @@ export default class CompiledCodeContentProvider implements TextDocumentContentP
         });
     }
 
-    async provideTextDocumentContent(uri: Uri): Promise<string | undefined> {
+    async provideTextDocumentContent(uri) {
         const srcUriStr = fromSvelteSchemeUri(uri, true);
         this.watchedSourceUri.add(srcUriStr);
 
-        const resp = await this.getLanguageClient().sendRequest<CompiledCodeResp>(
-            '$/getCompiledCode',
-            srcUriStr
-        );
+        const resp = await this.getLanguageClient().sendRequest('$/getCompiledCode', srcUriStr);
         if (resp?.js?.code) {
             return resp.js.code;
         } else {
