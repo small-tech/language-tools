@@ -118,12 +118,12 @@ repository:
     patterns:
     # {...}
     - { begin: '(?={)', end: '(?<=})',
-        name: meta.embedded.expression.svelte source.ts,
-        patterns: [include: source.ts#object-binding-pattern] }
+        name: meta.embedded.expression.svelte source.js,
+        patterns: [include: source.js#object-binding-pattern] }
     # [...]
     - { begin: '(?=\[)', end: '(?<=\])',
-        name: meta.embedded.expression.svelte source.ts,
-        patterns: [include: source.ts#array-binding-pattern] }
+        name: meta.embedded.expression.svelte source.js,
+        patterns: [include: source.js#array-binding-pattern] }
 
   # Plain old interpolation between `{...}` blocks.
   interpolation:
@@ -132,13 +132,13 @@ repository:
       end: \}
       beginCaptures: { 0: { name: punctuation.section.embedded.begin.svelte } }
       endCaptures:   { 0: { name: punctuation.section.embedded.end.svelte } }
-      contentName: meta.embedded.expression.svelte source.ts
+      contentName: meta.embedded.expression.svelte source.js
       patterns:
       # Object literals - usually used within attributes.
       - begin: \G\s*(?={)
         end: (?<=})
-        patterns: [ include: source.ts#object-literal ]
-      - include: source.ts
+        patterns: [ include: source.js#object-literal ]
+      - include: source.js
 
   # --------------
   #  SPECIAL TAGS
@@ -170,8 +170,8 @@ repository:
     # Expressions or simple values.
     - begin: (?<=(if|key|then|catch|html).*?)\G
       end: (?=})
-      name: meta.embedded.expression.svelte source.ts
-      patterns: [ include: source.ts ]
+      name: meta.embedded.expression.svelte source.js
+      patterns: [ include: source.js ]
 
     # Const.
     - begin: (?<=const.*?)\G
@@ -184,7 +184,7 @@ repository:
       # Expression (starting with "=").
       - begin: (?=\=)
         end: (?=})
-        patterns: [ include: source.ts#variable-initializer ]
+        patterns: [ include: source.js#variable-initializer ]
 
     # Each.
     - begin: (?<=each.*?)\G
@@ -193,8 +193,8 @@ repository:
       # Start expression.
       - begin: \G\s*?(?=\S)
         end: (?=(?:^\s*|\s+)(as))
-        contentName: meta.embedded.expression.svelte source.ts
-        patterns: [ include: source.ts ]
+        contentName: meta.embedded.expression.svelte source.js
+        patterns: [ include: source.js ]
       # 'as' token and onwards.
       - begin: (as)
         beginCaptures: { 1: { name: keyword.control.as.svelte } }
@@ -206,11 +206,11 @@ repository:
         - begin: \(
           end: \)|(?=})
           captures: { 0: { name: meta.brace.round.svelte } }
-          contentName: meta.embedded.expression.svelte source.ts
-          patterns: [ include: source.ts ]
+          contentName: meta.embedded.expression.svelte source.js
+          patterns: [ include: source.js ]
         # Name or index expression.
         - match: (\s*([_$[:alpha:]][_$[:alnum:]]*)\s*)
-          captures: { 1: { name: meta.embedded.expression.svelte source.ts, patterns: [ include: source.ts ] } }
+          captures: { 1: { name: meta.embedded.expression.svelte source.js, patterns: [ include: source.js ] } }
         # The comma.
         - { match: ',', name: punctuation.separator.svelte }
 
@@ -222,13 +222,13 @@ repository:
       - begin: \G\s*?(?=\S)
         end: \s+(then)|(?=})
         endCaptures: { 1: { name: keyword.control.flow.svelte } }
-        contentName: meta.embedded.expression.svelte source.ts
-        patterns: [ include: source.ts ]
+        contentName: meta.embedded.expression.svelte source.js
+        patterns: [ include: source.js ]
       # Then expression.
       - begin: (?<=then\b)
         end: (?=})
-        contentName: meta.embedded.expression.svelte source.ts
-        patterns: [ include: source.ts ]
+        contentName: meta.embedded.expression.svelte source.js
+        patterns: [ include: source.js ]
 
     # Debug.
     - begin: (?<=debug.*?)\G
@@ -236,7 +236,7 @@ repository:
       patterns:
       # Variables.
       - match: '[_$[:alpha:]][_$[:alnum:]]*'
-        captures: { 0: { name: meta.embedded.expression.svelte source.ts, patterns: [ include: source.ts ] } }
+        captures: { 0: { name: meta.embedded.expression.svelte source.js, patterns: [ include: source.js ] } }
       # The commas.
       - { match: ',', name: punctuation.separator.svelte }
 
@@ -294,8 +294,8 @@ repository:
     begin: (?<!:|=)\s*({)
     end: (\})
     captures: { 1: { name: entity.other.attribute-name.svelte } }
-    contentName: meta.embedded.expression.svelte source.ts
-    patterns: [ include: source.ts ]
+    contentName: meta.embedded.expression.svelte source.js
+    patterns: [ include: source.js ]
 
   # Matches attribute keyvalues. (and boolean attributes as well)
   # e.g. `class="my-class"`
