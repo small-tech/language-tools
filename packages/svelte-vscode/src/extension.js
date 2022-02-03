@@ -1,14 +1,12 @@
 import * as path from 'path';
 import {
     commands,
-    ExtensionContext,
     extensions,
     IndentAction,
     languages,
     Position,
     ProgressLocation,
     Range,
-    TextDocument,
     Uri,
     ViewColumn,
     window,
@@ -17,26 +15,21 @@ import {
 } from 'vscode';
 import {
     ExecuteCommandRequest,
-    LanguageClientOptions,
     RequestType,
     RevealOutputChannelOn,
-    TextDocumentEdit,
-    TextDocumentPositionParams,
-    WorkspaceEdit as LSWorkspaceEdit
+    TextDocumentEdit
 } from 'vscode-languageclient';
-import { LanguageClient, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+import { LanguageClient, TransportKind } from 'vscode-languageclient/node';
 import CompiledCodeContentProvider from './CompiledCodeContentProvider';
 import { activateTagClosing } from './html/autoClose';
 import { EMPTY_ELEMENTS } from './html/htmlEmptyTagsShared';
-import { TsPlugin } from './tsplugin';
 
-namespace TagCloseRequest {
-    export const type: RequestType<TextDocumentPositionParams, string, any> = new RequestType(
-        'html/tag'
-    );
-}
+let TagCloseRequest;
+(function (_TagCloseRequest) {
+    const type = (_TagCloseRequest.type = new RequestType('html/tag'));
+})(TagCloseRequest || (TagCloseRequest = {}));
 
-export function activate(context: ExtensionContext) {
+export function activate(context) {
     warnIfOldExtensionInstalled();
 
     const runtimeConfig = workspace.getConfiguration('svelte.language-server');
@@ -44,14 +37,14 @@ export function activate(context: ExtensionContext) {
     const { workspaceFolders } = workspace;
     const rootPath = Array.isArray(workspaceFolders) ? workspaceFolders[0].uri.fsPath : undefined;
 
-    const tempLsPath = runtimeConfig.get<string>('ls-path');
+    const tempLsPath = runtimeConfig.get('ls-path');
     // Returns undefined if path is empty string
     // Return absolute path if not already
     const lsPath =
         tempLsPath && tempLsPath.trim() !== ''
             ? path.isAbsolute(tempLsPath)
                 ? tempLsPath
-                : path.join(rootPath as string, tempLsPath)
+                : path.join(rootPath, tempLsPath)
             : undefined;
 
     const serverModule = require.resolve(lsPath || 'svelte-language-server/bin/server.js');
@@ -59,8 +52,8 @@ export function activate(context: ExtensionContext) {
 
     // Add --experimental-modules flag for people using node 12 < version < 12.17
     // Remove this in mid 2022 and bump vs code minimum required version to 1.55
-    const runExecArgv: string[] = ['--experimental-modules'];
-    let port = runtimeConfig.get<number>('port') ?? -1;
+    const runExecArgv = ['--experimental-modules'];
+    let port = runtimeConfig.get('port') ?? -1;
     if (port < 0) {
         port = 6009;
     } else {
@@ -69,7 +62,7 @@ export function activate(context: ExtensionContext) {
     }
     const debugOptions = { execArgv: ['--nolazy', '--experimental-modules', `--inspect=${port}`] };
 
-    const serverOptions: ServerOptions = {
+    const serverOptions = {
         run: {
             module: serverModule,
             transport: TransportKind.ipc,
@@ -78,14 +71,14 @@ export function activate(context: ExtensionContext) {
         debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions }
     };
 
-    const serverRuntime = runtimeConfig.get<string>('runtime');
+    const serverRuntime = runtimeConfig.get('runtime');
     if (serverRuntime) {
         serverOptions.run.runtime = serverRuntime;
         serverOptions.debug.runtime = serverRuntime;
         console.log('setting server runtime to', serverRuntime);
     }
 
-    const clientOptions: LanguageClientOptions = {
+    const clientOptions = {
         documentSelector: [{ scheme: 'file', language: 'svelte' }],
         revealOutputChannelOn: RevealOutputChannelOn.Never,
         synchronize: {
@@ -114,7 +107,7 @@ export function activate(context: ExtensionContext) {
                 scss: workspace.getConfiguration('scss')
             },
             dontFilterIncompleteCompletions: true, // VSCode filters client side and is smarter at it than us
-            isTrusted: (workspace as any).isTrusted
+            isTrusted: workspace.isTrusted
         }
     };
 
@@ -122,7 +115,7 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(ls.start());
 
     ls.onReady().then(() => {
-        const tagRequestor = (document: TextDocument, position: Position) => {
+        const tagRequestor = (document, position) => {
             const param = ls.code2ProtocolConverter.asTextDocumentPositionParams(
                 document,
                 position
@@ -162,7 +155,7 @@ export function activate(context: ExtensionContext) {
     );
 
     let restartingLs = false;
-    async function restartLS(showNotification: boolean) {
+    async function restartLS(showNotification) {
         if (restartingLs) {
             return;
         }
@@ -189,8 +182,6 @@ export function activate(context: ExtensionContext) {
     addCompilePreviewCommand(getLS, context);
 
     addExtracComponentCommand(getLS, context);
-
-    TsPlugin.create(context);
 
     languages.setLanguageConfiguration('svelte', {
         indentationRules: {
@@ -272,7 +263,7 @@ export function activate(context: ExtensionContext) {
     };
 }
 
-function addDidChangeTextDocumentListener(getLS: () => LanguageClient) {
+function addDidChangeTextDocumentListener(getLS) {
     // Only Svelte file changes are automatically notified through the inbuilt LSP
     // because the extension says it's only responsible for Svelte files.
     // Therefore we need to set this up for TS/JS files manually.
@@ -292,7 +283,7 @@ function addDidChangeTextDocumentListener(getLS: () => LanguageClient) {
     });
 }
 
-function addRenameFileListener(getLS: () => LanguageClient) {
+function addRenameFileListener(getLS) {
     workspace.onDidRenameFiles(async (evt) => {
         const oldUri = evt.files[0].oldUri.toString(true);
         const parts = oldUri.split(/\/|\\/);
@@ -309,7 +300,7 @@ function addRenameFileListener(getLS: () => LanguageClient) {
         window.withProgress(
             { location: ProgressLocation.Window, title: 'Updating Imports..' },
             async () => {
-                const editsForFileRename = await getLS().sendRequest<LSWorkspaceEdit | null>(
+                const editsForFileRename = await getLS().sendRequest(
                     '$/getEditsForFileRename',
                     // Right now files is always an array with a single entry.
                     // The signature was only designed that way to - maybe, in the future -
@@ -345,7 +336,7 @@ function addRenameFileListener(getLS: () => LanguageClient) {
     });
 }
 
-function addCompilePreviewCommand(getLS: () => LanguageClient, context: ExtensionContext) {
+function addCompilePreviewCommand(getLS, context) {
     const compiledCodeContentProvider = new CompiledCodeContentProvider(getLS);
 
     context.subscriptions.push(
@@ -377,7 +368,7 @@ function addCompilePreviewCommand(getLS: () => LanguageClient, context: Extensio
     );
 }
 
-function addExtracComponentCommand(getLS: () => LanguageClient, context: ExtensionContext) {
+function addExtracComponentCommand(getLS, context) {
     context.subscriptions.push(
         commands.registerTextEditorCommand('svelte.extractComponent', async (editor) => {
             if (editor?.document?.languageId !== 'svelte') {
@@ -406,7 +397,7 @@ function addExtracComponentCommand(getLS: () => LanguageClient, context: Extensi
     );
 }
 
-function createLanguageServer(serverOptions: ServerOptions, clientOptions: LanguageClientOptions) {
+function createLanguageServer(serverOptions, clientOptions) {
     return new LanguageClient('svelte', 'Svelte', serverOptions, clientOptions);
 }
 
