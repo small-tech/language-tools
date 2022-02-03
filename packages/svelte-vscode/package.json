@@ -51,7 +51,7 @@
     "contributes": {
         "configuration": {
             "type": "object",
-            "title": "Svelte",
+            "title": "NodeKit",
             "properties": {
                 "svelte.language-server.runtime": {
                     "scope": "application",
@@ -80,90 +80,6 @@
                     ],
                     "default": "off",
                     "description": "Traces the communication between VS Code and the Svelte Language Server."
-                },
-                "svelte.plugin.typescript.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript",
-                    "description": "Enable the TypeScript plugin"
-                },
-                "svelte.plugin.typescript.diagnostics.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Diagnostics",
-                    "description": "Enable diagnostic messages for TypeScript"
-                },
-                "svelte.plugin.typescript.hover.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Hover Info",
-                    "description": "Enable hover info for TypeScript"
-                },
-                "svelte.plugin.typescript.documentSymbols.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Symbols in Outline",
-                    "description": "Enable document symbols for TypeScript"
-                },
-                "svelte.plugin.typescript.completions.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Completions",
-                    "description": "Enable completions for TypeScript"
-                },
-                "svelte.plugin.typescript.findReferences.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Find References",
-                    "description": "Enable find-references for TypeScript"
-                },
-                "svelte.plugin.typescript.definitions.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Go to Definition",
-                    "description": "Enable go to definition for TypeScript"
-                },
-                "svelte.plugin.typescript.codeActions.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Code Actions",
-                    "description": "Enable code actions for TypeScript"
-                },
-                "svelte.plugin.typescript.selectionRange.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Selection Range",
-                    "description": "Enable selection range for TypeScript"
-                },
-                "svelte.plugin.typescript.signatureHelp.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Signature Help",
-                    "description": "Enable signature help (parameter hints) for TypeScript"
-                },
-                "svelte.plugin.typescript.rename.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Rename",
-                    "description": "Enable rename functionality for JS/TS variables inside Svelte files"
-                },
-                "svelte.plugin.typescript.semanticTokens.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "TypeScript: Semantic Tokens",
-                    "description": "Enable semantic tokens (semantic highlight) for TypeScript."
-                },
-                "svelte.plugin.typescript.implementation.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "Typescript: Go to Implementation",
-                    "description": "Enable go to implementation for Typescript"
-                },
-                "svelte.plugin.typescript.typeDefinition.enable": {
-                    "type": "boolean",
-                    "default": true,
-                    "title": "Typescript: Go to Type Definition",
-                    "description": "Enable go to Type Definition for Typescript"
                 },
                 "svelte.plugin.css.enable": {
                     "type": "boolean",
