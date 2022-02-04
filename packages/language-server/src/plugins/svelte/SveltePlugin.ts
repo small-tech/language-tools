@@ -31,6 +31,7 @@ import { getDiagnostics } from './features/getDiagnostics';
 import { getHoverInfo } from './features/getHoverInfo';
 import { getSelectionRange } from './features/getSelectionRanges';
 import { SvelteCompileResult, SvelteDocument } from './SvelteDocument';
+import sveltePreprocess from 'svelte-preprocess'
 
 export class SveltePlugin
     implements
@@ -49,6 +50,16 @@ export class SveltePlugin
     async getDiagnostics(document: Document): Promise<Diagnostic[]> {
         if (!this.featureEnabled('diagnostics') || !this.configManager.getIsTrusted()) {
             return [];
+        }
+
+        if (document.config) {
+            document.config.preprocess = [
+                sveltePreprocess({
+                    replace: [[
+                        /<script node>(.*?)<\/script>/s, '<!--$1-->'
+                    ]]
+                })
+            ]
         }
 
         return getDiagnostics(

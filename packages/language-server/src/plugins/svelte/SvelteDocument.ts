@@ -19,6 +19,7 @@ import {
 } from '../../lib/documents';
 import { SvelteConfig } from '../../lib/documents/configLoader';
 import { getLastPartOfPath, isNotNullOrUndefined } from '../../utils';
+import sveltePreprocess from 'svelte-preprocess'
 
 export type SvelteCompileResult = ReturnType<typeof compile>;
 
@@ -71,16 +72,28 @@ export class SvelteDocument {
                 version: { major, minor }
             } = getPackageInfo('svelte', this.getFilePath());
 
+            const config = await this.config
+            if (config) {
+                config.preprocess = [
+                    sveltePreprocess({
+                        sourceMap: true,
+                        replace: [[
+                            /<script node>(.*?)<\/script>/s, '<!--$1-->'
+                        ]]
+                    })
+                ]
+            }
+
             if (major > 3 || (major === 3 && minor >= 32)) {
                 this.transpiledDoc = await TranspiledSvelteDocument.create(
                     this.parent,
-                    await this.config
+                    config
                 );
             } else {
                 this.transpiledDoc = await FallbackTranspiledSvelteDocument.create(
                     this.parent,
                     (
-                        await this.config
+                        config
                     )?.preprocess
                 );
             }
@@ -98,7 +111,8 @@ export class SvelteDocument {
 
     async getCompiledWith(options: CompileOptions = {}): Promise<SvelteCompileResult> {
         const svelte = importSvelte(this.getFilePath());
-        return svelte.compile((await this.getTranspiled()).getText(), options);
+        const text = (await this.getTranspiled()).getText();
+        return svelte.compile(text, options);
     }
 
     /**
@@ -119,6 +133,20 @@ export interface ITranspiledSvelteDocument extends PositionMapper {
 
 export class TranspiledSvelteDocument implements ITranspiledSvelteDocument {
     static async create(document: Document, config: SvelteConfig | undefined) {
+        // NodeKit: remove the <data>…</data> section from the document
+        // by replacing it with an HTML comment (this also keeps the
+        // line numbering so that the sourcemaps are not affected).
+        if (config) {
+            config.preprocess = [
+                sveltePreprocess({
+                    sourceMap: true,
+                    replace: [[
+                        /<script node>(.*?)<\/script>/s, '<!--$1-->'
+                    ]]
+                })
+            ]
+        }
+
         if (!config?.preprocess) {
             return new TranspiledSvelteDocument(document.getText());
         }

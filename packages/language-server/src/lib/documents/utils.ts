@@ -61,7 +61,15 @@ function extractTags(
 ): TagInformation[] {
     const rootNodes = html?.roots || parseHtml(text).roots;
     const matchedNodes = rootNodes
-        .filter((node) => node.tag === tag)
+        .filter((node) => {
+            let ignoreNodeScript = false
+            const attributes = node.attributes
+            if (attributes) {
+                ignoreNodeScript = Object.keys(attributes).includes('node')
+            }
+            const result = node.tag === tag && !ignoreNodeScript
+            return result
+        })
         .filter((tag) => {
             return isNotInsideControlFlowTag(tag) && isNotInsideHtmlTag(tag);
         });

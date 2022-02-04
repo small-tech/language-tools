@@ -3,6 +3,7 @@ import { WritableDocument } from './DocumentBase';
 import { extractScriptTags, extractStyleTag, extractTemplateTag, TagInformation } from './utils';
 import { parseHtml } from './parseHtml';
 import { SvelteConfig, configLoader } from './configLoader';
+import sveltePreprocess from 'svelte-preprocess'
 import { HTMLDocument } from 'vscode-html-languageservice';
 
 /**
@@ -33,6 +34,21 @@ export class Document extends WritableDocument {
         this.html = parseHtml(this.content);
         const update = (config: SvelteConfig | undefined) => {
             const scriptTags = extractScriptTags(this.content, this.html);
+
+            // NodeKit: remove the <data>…</data> section from the document
+            // by replacing it with an HTML comment (this also keeps the
+            // line numbering so that the sourcemaps are not affected).
+            if (config) {
+                config.preprocess = [
+                    sveltePreprocess({
+                        sourceMap: true,
+                        replace: [[
+                            /<script node>(.*?)<\/script>/s, '<!--$1-->'
+                        ]]
+                    })
+                ]
+            }
+
             this.config = config;
             this.scriptInfo = this.addDefaultLanguage(config, scriptTags?.script || null, 'script');
             this.moduleScriptInfo = this.addDefaultLanguage(
