@@ -14,7 +14,7 @@ import {
     WorkspaceEdit
 } from 'vscode';
 import {
-    ExecuteCommandRequest,
+    ExecuteCommandRequest
     RequestType,
     RevealOutputChannelOn,
     TextDocumentEdit
