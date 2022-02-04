@@ -171,7 +171,7 @@ function preprocessSvelteFile(document: Document, options: SvelteSnapshotOptions
     try {
         // TODO: This removes the duplicate <script> error.
         // However, the initial script is no longer seen as JavaScript.
-        const tsx = svelte2tsx(text.replace(/<script node>(.*?)<\/script>/s, '<!--$1-->'), {
+        const tsx = svelte2tsx(text.replace(/<data>(.*?)<\/data>/s, '<!--$1-->'), {
             filename: document.getFilePath() ?? undefined,
             isTsFile: options.useNewTransformation
                 ? scriptKind === ts.ScriptKind.TS

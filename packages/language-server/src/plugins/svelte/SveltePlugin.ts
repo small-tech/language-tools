@@ -56,7 +56,7 @@ export class SveltePlugin
             document.config.preprocess = [
                 sveltePreprocess({
                     replace: [[
-                        /<script node>(.*?)<\/script>/s, '<!--$1-->'
+                        /<data>(.*?)<\/data>/s, '<!--$1-->'
                     ]]
                 })
             ]
