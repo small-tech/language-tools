@@ -43,7 +43,7 @@ export class Document extends WritableDocument {
                     sveltePreprocess({
                         sourceMap: true,
                         replace: [[
-                            /<data>(.*?)<\/data>/s, '<!--$1-->'
+                            /<script node>(.*?)<\/script>/s, '<!--$1-->'
                         ]]
                     })
                 ]

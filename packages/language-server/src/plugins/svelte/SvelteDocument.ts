@@ -78,7 +78,7 @@ export class SvelteDocument {
                     sveltePreprocess({
                         sourceMap: true,
                         replace: [[
-                            /<data>(.*?)<\/data>/s, '<!--$1-->'
+                            /<script node>(.*?)<\/script>/s, '<!--$1-->'
                         ]]
                     })
                 ]
@@ -141,7 +141,7 @@ export class TranspiledSvelteDocument implements ITranspiledSvelteDocument {
                 sveltePreprocess({
                     sourceMap: true,
                     replace: [[
-                        /<data>(.*?)<\/data>/s, '<!--$1-->'
+                        /<script node>(.*?)<\/script>/s, '<!--$1-->'
                     ]]
                 })
             ]
